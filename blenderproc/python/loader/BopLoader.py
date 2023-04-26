@@ -43,6 +43,9 @@ def load_bop_objs(bop_dataset_path: str, model_type: str = "", obj_ids: Optional
     # pylint: enable=import-outside-toplevel
 
     model_p = dataset_params.get_model_params(bop_path, bop_dataset_name, model_type=model_type if model_type else None)
+    if 'ycbv' in bop_dataset_path:
+        model_p['obj_ids'].append(22)
+        print(model_p)
 
     scale = 0.001 if mm2m else 1
 
@@ -126,6 +129,9 @@ def load_bop_scene(bop_dataset_path: str, scene_id: int, model_type: str = "", c
     try:
         split_p = dataset_params.get_split_params(bop_path, bop_dataset_name, split=split,
                                                   split_type=cam_type if cam_type else None)
+        if cam_type == 'ximea_scaled':
+            # fix size for ximea camera
+            split_p['im_size'] = (512, 512)
     except ValueError as e:
         raise RuntimeError(f"Wrong path or {split} split does not exist in {bop_dataset_path}.") from e
     sc_gt = inout.load_scene_gt(split_p['scene_gt_tpath'].format(**{'scene_id': scene_id}))
@@ -188,6 +194,8 @@ def load_bop_intrinsics(bop_dataset_path: str, split: str = "test", cam_type: st
     try:
         split_p = dataset_params.get_split_params(bop_path, bop_dataset_name, split=split,
                                                   split_type=cam_type if cam_type else None)
+        if cam_type == 'ximea_scaled':
+            split_p['im_size'] = (512, 512)
     except ValueError as e:
         raise RuntimeError(f"Wrong path or {split} split does not exist in {bop_dataset_path}.") from e
 
