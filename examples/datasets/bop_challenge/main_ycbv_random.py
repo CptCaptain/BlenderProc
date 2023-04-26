@@ -21,7 +21,8 @@ hb_dist_bop_objs = bproc.loader.load_bop_objs(bop_dataset_path = os.path.join(ar
 tyol_dist_bop_objs = bproc.loader.load_bop_objs(bop_dataset_path = os.path.join(args.bop_parent_path, 'tyol'), mm2m = True)
 
 # load BOP datset intrinsics
-bproc.loader.load_bop_intrinsics(bop_dataset_path = os.path.join(args.bop_parent_path, 'ycbv'))
+bproc.loader.load_bop_intrinsics(bop_dataset_path = os.path.join(args.bop_parent_path, 'ycbv'), cam_type='ximea_scaled')
+# bproc.loader.load_bop_intrinsics(bop_dataset_path = os.path.join(args.bop_parent_path, 'ycbv'))
 
 # set shading and hide objects
 for obj in (target_bop_objs + tless_dist_bop_objs + hb_dist_bop_objs + tyol_dist_bop_objs):
@@ -63,7 +64,7 @@ bproc.renderer.set_max_amount_of_samples(50)
 for i in range(args.num_scenes):
 
     # Sample bop objects for a scene
-    sampled_target_bop_objs = list(np.random.choice(target_bop_objs, size=21, replace=False))
+    sampled_target_bop_objs = list(np.random.choice(target_bop_objs, size=22, replace=False))
     sampled_distractor_bop_objs = list(np.random.choice(tless_dist_bop_objs, size=2, replace=False))
     sampled_distractor_bop_objs += list(np.random.choice(hb_dist_bop_objs, size=2, replace=False))
     sampled_distractor_bop_objs += list(np.random.choice(tyol_dist_bop_objs, size=2, replace=False))
@@ -113,8 +114,11 @@ for i in range(args.num_scenes):
     while cam_poses < 25:
         # Sample location
         location = bproc.sampler.shell(center = [0, 0, 0],
-                                radius_min = 0.61,
-                                radius_max = 1.24,
+                                       radius_min = 0.61,
+                                       radius_max = 1.24,
+                                # extend radius due to increased focal length
+                                       # radius_min = 1.41,
+                                       # radius_max = 2.84,
                                 elevation_min = 5,
                                 elevation_max = 89)
         # Determine point of interest in scene as the object closest to the mean of a subset of objects
